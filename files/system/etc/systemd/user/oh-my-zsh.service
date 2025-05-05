@@ -1,0 +1,11 @@
+[Unit]
+Description=Install or Update Oh My Zsh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/etc/ohmyzsh/omz-install-or-update.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=default.target
+

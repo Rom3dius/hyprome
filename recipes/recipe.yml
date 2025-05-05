@@ -12,6 +12,10 @@ modules:
       - source: system
         destination: /
 
+  - type: script
+    scripts:
+      - 1password-repo.sh
+
   # Remove sway
   - type: rpm-ostree
     remove:
@@ -23,26 +27,64 @@ modules:
       - sway-config-fedora
       - sddm-wayland-sway
       - grimshot
-      - xdg-desktop-portal-wlr # replace with the Hyprland backend
+      - xdg-desktop-portal-wlr
 
-  # Install hyprland
+  # Install hyprland and more, remove useless packages
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-42/solopasha-hyprland-fedora-42.repo
+      - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-42/che-nerd-fonts-fedora-42.repo
     install:
-      - hyprland # compositor
-      - xdg-desktop-portal-hyprland # screenshare/screenshot backend
-      - hyprpaper # wallpaper helper (optional)
-      - hyprlock # lock screen   (optional)
-      - hypridle # idle daemon   (optional)
+      - hyprland
+      - xdg-desktop-portal-hyprland
+      - hyprpaper
+      - hyprlock
+      - hypridle
+      - zsh
+      - nerd-fonts
+      - dunst
+      - wlogout
+      - 1password-cli
+      - tailscale
+      - moby-engine
+      - distrobox
+      - podman-compose
+      - qt6-qtsvg
+      - qt6-qtvirtualkeyboard
+      - qt6-qtmultimedia
+      - fastfetch
+      - fzf
+      - lsd
+    remove:
+      - firefox
+      - firefox-langpacks
+
+  - type: brew
+    nofile-limits: true
+    brew-analytics: false
 
   - type: default-flatpaks
     notify: true
     system:
+      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      repo-name: flathub
       install:
         - com.brave.Browser
-      remove:
-        - org.gnome.eog
-    user: {}
+        - io.github.dvlv.boxbuddyrs
+        - io.podman_desktop.PodmanDesktop
+        - com.github.tchx84.Flatseal
+
+  - type: script
+    scripts:
+      - theme-sddm.sh
+
+  - type: systemd
+    system:
+      enabled:
+        - tailscaled.service
+    user:
+      enabled:
+        - oh-my-zsh.service
 
   - type: signing
