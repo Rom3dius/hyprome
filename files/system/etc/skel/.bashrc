@@ -28,5 +28,6 @@ fi
 
 alias ml4w-hyprland='~/.config/ml4w/apps/ML4W_Hyprland_Settings-x86_64.AppImage'
 
-[ ! -z "$PS1" ] && exec /usr/bin/zsh
-
+if [ -z "$INSIDE_DEV" ] && [ -n "$PS1" ]; then
+  exec distrobox enter boxkit
+fi

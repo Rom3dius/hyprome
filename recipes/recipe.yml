@@ -35,6 +35,7 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-42/solopasha-hyprland-fedora-42.repo
       - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
       - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-42/che-nerd-fonts-fedora-42.repo
+      - https://copr.fedorainfracloud.org/coprs/ublue-os/packages/repo/fedora-42/ublue-os-packages.repo
     install:
       - hyprland
       - xdg-desktop-portal-hyprland
@@ -45,7 +46,6 @@ modules:
       - nerd-fonts
       - dunst
       - wlogout
-      - 1password-cli
       - tailscale
       - moby-engine
       - distrobox
@@ -55,7 +55,10 @@ modules:
       - qt6-qtmultimedia
       - fastfetch
       - fzf
+      - cliphist
+      - wl-clipboard
       - lsd
+      - btop
     remove:
       - firefox
       - firefox-langpacks
@@ -77,7 +80,7 @@ modules:
 
   - type: script
     scripts:
-      - theme-sddm.sh
+      - install-sddm-theme.sh
 
   - type: systemd
     system:
