@@ -1,0 +1,11 @@
+[Unit]
+Description=Install dots
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dots-tool
+RemainAfterExit=true
+
+[Install]
+WantedBy=default.target
+

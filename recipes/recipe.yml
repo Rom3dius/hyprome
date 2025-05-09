@@ -14,7 +14,7 @@ modules:
 
   - type: script
     scripts:
-      - 1password-repo.sh
+      - install-1password.sh
 
   # Remove sway
   - type: rpm-ostree
@@ -36,6 +36,7 @@ modules:
       - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
       - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-42/che-nerd-fonts-fedora-42.repo
       - https://copr.fedorainfracloud.org/coprs/ublue-os/packages/repo/fedora-42/ublue-os-packages.repo
+      - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_42/home:TheLocehiliosan:yadm.repo
     install:
       - hyprland
       - xdg-desktop-portal-hyprland
@@ -57,6 +58,7 @@ modules:
       - fzf
       - cliphist
       - wl-clipboard
+      - yadm
       - lsd
       - btop
     remove:
@@ -86,8 +88,10 @@ modules:
     system:
       enabled:
         - tailscaled.service
+        - podman-auto-update.timer
     user:
       enabled:
-        - oh-my-zsh.service
+        - dotfiles.service
+        - hyprome-init.service
 
   - type: signing
