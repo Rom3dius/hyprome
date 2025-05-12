@@ -1,0 +1,15 @@
+[Unit]
+Description=Install omz
+Wants=hyprland-reloader.service
+After=hyprland-reloader.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/hyprome-dots/sync-dots.sh
+StandardOutput=journal
+StandardError=journal
+RemainAfterExit=true
+
+[Install]
+WantedBy=default.target
+

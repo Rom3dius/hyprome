@@ -54,6 +54,7 @@ modules:
       - qt6-qtsvg
       - qt6-qtvirtualkeyboard
       - qt6-qtmultimedia
+      - inotify-tools
       - fastfetch
       - fzf
       - cliphist
@@ -64,10 +65,6 @@ modules:
     remove:
       - firefox
       - firefox-langpacks
-
-  - type: brew
-    nofile-limits: true
-    brew-analytics: false
 
   - type: default-flatpaks
     notify: true
@@ -91,7 +88,7 @@ modules:
         - podman-auto-update.timer
     user:
       enabled:
-        - dotfiles.service
-        - hyprome-init.service
+        - sync-dots.service
+        - hyprland-reloader.service
 
   - type: signing

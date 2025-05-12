@@ -1,0 +1,12 @@
+[Unit]
+Description=Reload Hyprland on config changes
+
+[Service]
+ExecStart=/usr/lib/hyprome-hypr/hyprland-reloader.sh
+Restart=on-failure
+StandardOutput=journal
+StandardError=journal
+
+
+[Install]
+WantedBy=default.target
