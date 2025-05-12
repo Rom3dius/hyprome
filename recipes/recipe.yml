@@ -43,6 +43,7 @@ modules:
       - hyprpaper
       - hyprlock
       - hypridle
+      - hyprpolkitagent
       - zsh
       - nerd-fonts
       - dunst
