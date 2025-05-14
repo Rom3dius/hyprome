@@ -5,6 +5,7 @@ set -euo pipefail
 ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 DOTS_REPO="https://github.com/Rom3dius/hyprome-dev-dots"
 YADM_DIR="$HOME/.local/share/yadm/repo.git"
+BOOTSTRAP="$HOME/.config/yadm/bootstrap"
 
 # ─── Functions ──────────────────────────────────────────────────────
 
@@ -36,6 +37,14 @@ reset_yadm_repo() {
   yadm checkout "$HOME"
 
   echo "[YADM] Done syncing dotfiles"
+
+  # Run YADM bootstrap if it exists
+  if [ -x "$BOOTSTRAP" ]; then
+    echo "[YADM] Running bootstrap script..."
+    "$BOOTSTRAP"
+  else
+    echo "[YADM] No executable bootstrap script found at $BOOTSTRAP"
+  fi
 }
 
 # ─── Main ───────────────────────────────────────────────────────────
