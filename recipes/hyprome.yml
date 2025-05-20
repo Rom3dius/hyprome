@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+name: hyprome
+description: Personal atomic hyprland fedora image.
+
+base-image: quay.io/fedora-ostree-desktops/sway-atomic
+image-version: 42
+
+modules:
+  - from-file: base-system.yml
+  - type: signing

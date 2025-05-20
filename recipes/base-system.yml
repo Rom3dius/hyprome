@@ -1,11 +1,3 @@
----
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-name: hyprome
-description: Personal atomic hyprland fedora image.
-
-base-image: quay.io/fedora-ostree-desktops/sway-atomic
-image-version: 42
-
 modules:
   - type: files
     files:
@@ -40,7 +32,7 @@ modules:
     install:
       - hyprland
       - xdg-desktop-portal-hyprland
-      - hyprpaper
+      - swww
       - hyprlock
       - hypridle
       - hyprpolkitagent
@@ -79,6 +71,7 @@ modules:
         - io.github.dvlv.boxbuddyrs
         - io.podman_desktop.PodmanDesktop
         - com.github.tchx84.Flatseal
+        - org.gnome.Loupe
 
   - type: script
     scripts:
@@ -93,5 +86,3 @@ modules:
       enabled:
         - sync-dots.service
         - hyprland-reloader.service
-
-  - type: signing
