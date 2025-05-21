@@ -45,6 +45,8 @@ modules:
       - moby-engine
       - distrobox
       - podman-compose
+      - qt5ct
+      - qt6ct
       - qt6-qtsvg
       - qt6-qtvirtualkeyboard
       - qt6-qtmultimedia
@@ -73,10 +75,6 @@ modules:
         - io.podman_desktop.PodmanDesktop
         - com.github.tchx84.Flatseal
         - org.gnome.Loupe
-
-  - type: script
-    scripts:
-      - install-sddm-theme.sh
 
   - type: systemd
     system:
