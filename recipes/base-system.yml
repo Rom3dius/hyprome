@@ -31,6 +31,7 @@ modules:
       - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_42/home:TheLocehiliosan:yadm.repo
     install:
       - hyprland
+      - xdg-desktop-portal-gtk
       - xdg-desktop-portal-hyprland
       - swww
       - hyprlock
