@@ -60,6 +60,8 @@ modules:
       - yadm
       - lsd
       - btop
+      - gitleaks
+      - zoxide
     remove:
       - firefox
       - firefox-langpacks
