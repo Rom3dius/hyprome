@@ -1,13 +1,13 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # image will be published to ghcr.io/<user>/<name>
-name: template
+name: hyprome
 # description will be included in the image's metadata
-description: This is my personal OS image.
+description: hyprome; my personal OS image
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 41 # latest is also supported if you want new updates ASAP
+base-image: quay.io/fedora-ostree-desktops/sway-atomic
+image-version: 42
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
@@ -15,29 +15,101 @@ modules:
   - type: files
     files:
       - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+        destination: /
 
+  # Remove sway
+  - type: rpm-ostree
+    remove:
+      - sway
+      - swaybg
+      - swayidle
+      - swaylock
+      - sway-systemd
+      - sway-config-fedora
+      - sddm-wayland-sway
+      - grimshot
+      - xdg-desktop-portal-wlr
+
+  # Install hyprland and more
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-42/solopasha-hyprland-fedora-42.repo
+      - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-42/che-nerd-fonts-fedora-42.repo
+      - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_42/home:TheLocehiliosan:yadm.repo
+      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-42/nwg-shell-fedora-42.repo
     install:
-      - micro
-      - starship
+      - hyprland
+      - xdg-desktop-portal-gtk
+      - xdg-desktop-portal-hyprland
+      - swww
+      - hyprlock
+      - hypridle
+      - hyprpolkitagent
+      - nwg-displays
+      - zsh
+      - nerd-fonts
+      - dunst
+      - wlogout
+      - tailscale
+      - moby-engine
+      - distrobox
+      - podman-compose
+      - qt5ct
+      - qt6ct
+      - qt6-qtsvg
+      - qt6-qtvirtualkeyboard
+      - qt6-qtmultimedia
+      - gnome-disk-utility
+      - inotify-tools
+      - rclone
+      - fd-find
+      - fastfetch
+      - fzf
+      - cliphist
+      - wl-clipboard
+      - yadm
+      - lsd
+      - below
+      - gitleaks
+      - zoxide
     remove:
-      # example: removing firefox (in favor of the flatpak)
-      # "firefox" is the main package, "firefox-langpacks" is a dependency
       - firefox
-      - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+      - firefox-langpacks
 
   - type: default-flatpaks
     configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
+      - scope: user
+        repo:
+          # you can override the title to make inclusion of both system and user repos clearer
+          title: Flathub (user)
+      - notify: true
         scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
+        repo:
+          title: Flathub (system)
+        install:
+          - com.brave.Browser
+          - io.github.dvlv.boxbuddyrs
+          - io.podman_desktop.PodmanDesktop
+          - com.github.tchx84.Flatseal
           - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
+          - org.flameshot.Flameshot
 
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+  - type: bling
+    install:
+      - 1password
 
+  - type: soar
+    additional-repos: true
+    auto-upgrade: true
+    upgrade-interval: "3h"
+
+  - type: systemd
+    system:
+      enabled:
+        - tailscaled.service
+        - podman-auto-update.timer
+    user:
+      enabled:
+        - sync-dots.service
+        - hyprland-reloader.service

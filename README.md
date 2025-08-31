@@ -1,34 +1,29 @@
-# BlueBuild Template &nbsp; [![bluebuild build badge](https://github.com/blue-build/template/actions/workflows/build.yml/badge.svg)](https://github.com/blue-build/template/actions/workflows/build.yml)
+# Hyprome &nbsp; [![hyprome build badge](https://github.com/rom3dius/hyprome/actions/workflows/build.yml/badge.svg)](https://github.com/rom3dius/hyprome/actions/workflows/build.yml)
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
+Custom Fedora atomic operating system for my personal usage.
+Any PRs, suggestions etc. are welcome.
+Uses hyprland, shell drops you into a distrobox container by default.
 
-After setup, it is recommended you update this README to describe your custom image.
+## Notes
 
-## Installation
+On first start it clones some dots, which breaks hyprland. Wait a few seconds, reboot and you'll be good to go.
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+### Local Testing
 
-To rebase an existing atomic Fedora installation to the latest build:
+If you want to build and rebase locally:
 
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/blue-build/template:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/blue-build/template:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
+```bash
+bluebuild build -B podman recipes/recipe.yml
+podman save --format oci-archive -o /var/tmp/hyprome.tar localhost/hyprome:latest
+sudo rpm-ostree rebase ostree-unverified-image:oci-archive:/var/tmp/hyprome.tar
+```
 
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
+If there's issues, once you're back in the old system:
+
+```bash
+rpm-ostree rollback
+rpm-ostree cleanup -p
+```
 
 ## ISO
 
