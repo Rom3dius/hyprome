@@ -1,0 +1,17 @@
+NAME="hyprome"
+VERSION="43 (Forty Three)"
+RELEASE_TYPE=stable
+ID="fedora"
+ID_LIKE="hyprome"
+VERSION_ID=43
+VERSION_CODENAME=""
+PRETTY_NAME="hyprome (powered by Fedora Atomic)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:hyprome:hyprome:43"
+DEFAULT_HOSTNAME="hyprome"
+HOME_URL="https://github.com/rom3dius/hyprome"
+DOCUMENTATION_URL="https://github.com/rom3dius/hyprome"
+SUPPORT_URL="https://github.com/rom3dius/hyprome/issues"
+BUG_REPORT_URL="https://github.com/rom3dius/hyprome/issues"
+VARIANT_ID=hyprland

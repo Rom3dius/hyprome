@@ -1,7 +1,0 @@
-[terminal]
-# keep the vt Sway Atomic already uses
-vt = 1
-
-[default_session]
-command = "Hyprland" # wrapper provided by the RPM
-user = "greeter"

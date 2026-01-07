@@ -6,8 +6,8 @@ name: hyprome
 description: hyprome; my personal OS image
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: quay.io/fedora-ostree-desktops/sway-atomic
-image-version: 42
+base-image: ghcr.io/wayblueorg/hyprland
+image-version: latest
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
@@ -17,62 +17,41 @@ modules:
       - source: system
         destination: /
 
-  # Remove sway
-  - type: rpm-ostree
-    remove:
-      - sway
-      - swaybg
-      - swayidle
-      - swaylock
-      - sway-systemd
-      - sway-config-fedora
-      - sddm-wayland-sway
-      - grimshot
-      - xdg-desktop-portal-wlr
-
-  # Install hyprland and more
+  # Install additional packages
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-42/solopasha-hyprland-fedora-42.repo
       - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-42/che-nerd-fonts-fedora-42.repo
-      - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_42/home:TheLocehiliosan:yadm.repo
-      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-42/nwg-shell-fedora-42.repo
+      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-43/che-nerd-fonts-fedora-43.repo
+      - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_Rawhide/home:TheLocehiliosan:yadm.repo
+      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-43/tofik-nwg-shell-fedora-43.repo
     install:
-      - hyprland
-      - xdg-desktop-portal-gtk
-      - xdg-desktop-portal-hyprland
+      # Hyprland extras (wayblue uses hyprpaper, we use swww)
       - swww
-      - hyprlock
-      - hypridle
       - hyprpolkitagent
       - nwg-displays
+      - wlogout
+      # Shell & CLI tools
       - zsh
       - nerd-fonts
-      - dunst
-      - wlogout
-      - tailscale
-      - moby-engine
-      - distrobox
-      - podman-compose
-      - qt5ct
-      - qt6ct
-      - qt6-qtsvg
-      - qt6-qtvirtualkeyboard
-      - qt6-qtmultimedia
-      - gnome-disk-utility
-      - inotify-tools
-      - rclone
-      - fd-find
-      - fastfetch
-      - fzf
-      - cliphist
-      - wl-clipboard
       - yadm
       - lsd
+      - fastfetch
+      - cliphist
+      - zoxide
+      - fd-find
       - below
       - gitleaks
-      - zoxide
+      # System services
+      - tailscale
+      - moby-engine
+      - podman-compose
+      - inotify-tools
+      - rclone
+      - smartmontools
+      - NetworkManager-tui
+      # Qt theming (qt6 packages conflict with wayblue's qt6-qtbase version)
+      - qt5ct
+      - qt6-qtmultimedia
     remove:
       - firefox
       - firefox-langpacks

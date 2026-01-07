@@ -1,5 +1,5 @@
 [Unit]
-Description=Install omz
+Description=Sync dotfiles and oh-my-zsh
 Wants=hyprland-reloader.service
 After=hyprland-reloader.service
 

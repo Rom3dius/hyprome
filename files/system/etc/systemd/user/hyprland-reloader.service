@@ -2,6 +2,7 @@
 Description=Reload Hyprland on config changes
 
 [Service]
+Type=simple
 ExecStart=/usr/lib/hyprome-hypr/hyprland-reloader.sh
 Restart=on-failure
 StandardOutput=journal
