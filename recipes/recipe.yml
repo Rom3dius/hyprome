@@ -41,6 +41,10 @@ modules:
       - fd-find
       - below
       - gitleaks
+      # Image/PDF viewers (GUI apps for yazi openers)
+      - imv
+      - zathura
+      - zathura-pdf-poppler
       # System services
       - tailscale
       - moby-engine
@@ -73,6 +77,7 @@ modules:
           - com.github.tchx84.Flatseal
           - org.gnome.Loupe
           - org.flameshot.Flameshot
+          - io.mpv.Mpv
 
   - type: bling
     install:
