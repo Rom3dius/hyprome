@@ -1,0 +1,14 @@
+[Unit]
+Description=Download/update hyprvoice binary and whisper model
+After=sync-dots.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/hyprome-voice/setup-hyprvoice.sh
+StandardOutput=journal
+StandardError=journal
+RemainAfterExit=true
+
+[Install]
+WantedBy=default.target

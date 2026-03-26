@@ -52,7 +52,10 @@ modules:
       - inotify-tools
       - rclone
       - smartmontools
+      - gparted
       - NetworkManager-tui
+      # Voice-to-text (hyprvoice dependency)
+      - wtype
       # Qt theming (qt6 packages conflict with wayblue's qt6-qtbase version)
       - qt5ct
       - qt6-qtmultimedia
@@ -97,3 +100,5 @@ modules:
       enabled:
         - sync-dots.service
         - hyprland-reloader.service
+        - setup-hyprvoice.service
+        - hyprvoice.service

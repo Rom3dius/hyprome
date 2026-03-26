@@ -1,0 +1,14 @@
+[Unit]
+Description=Hyprvoice voice-to-text daemon
+After=setup-hyprvoice.service pipewire.service
+Requires=setup-hyprvoice.service
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
+ExecStart=%h/.local/bin/hyprvoice serve
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
