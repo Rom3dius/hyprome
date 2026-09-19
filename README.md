@@ -2,7 +2,7 @@
 
 Custom Fedora atomic operating system for my personal usage.
 Any PRs, suggestions etc. are welcome.
-Uses hyprland, shell drops you into a distrobox container by default.
+Uses Hyprland with [caelestia-dots](https://github.com/caelestia-dots/caelestia) (quickshell-based) as the desktop shell; login shell drops you into a distrobox container by default for dev tooling.
 
 ## Notes
 

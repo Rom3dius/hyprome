@@ -21,15 +21,21 @@ modules:
   - type: rpm-ostree
     repos:
       - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-43/che-nerd-fonts-fedora-43.repo
+      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-44/che-nerd-fonts-fedora-44.repo
       - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_Rawhide/home:TheLocehiliosan:yadm.repo
-      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-43/tofik-nwg-shell-fedora-43.repo
+      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-44/tofik-nwg-shell-fedora-44.repo
     install:
-      # Hyprland extras (wayblue uses hyprpaper, we use swww)
-      - swww
+      # Hyprland extras
+      # NOTE: `swww` was previously installed here to override wayblue's
+      # hyprpaper default, but it's not available in any currently-enabled
+      # repo for Fedora 44 (not in tofik/nwg-shell or wayblue's own
+      # craftidore/wayblueorg-hyprland COPR, and solopasha/hyprland — a
+      # common source for it — has no f44 build yet). Dropped rather than
+      # chasing a new COPR: caelestia-shell now owns wallpaper management
+      # directly, making both swww and wayblue's own hyprpaper redundant —
+      # see the `remove:` list below.
       - hyprpolkitagent
       - nwg-displays
-      - wlogout
       # Shell & CLI tools
       - zsh
       - nerd-fonts
@@ -38,9 +44,9 @@ modules:
       - fastfetch
       - cliphist
       - zoxide
-      - fd-find
       - below
       - gitleaks
+      - rsync
       # Image/PDF viewers (GUI apps for yazi openers)
       - imv
       - zathura
@@ -56,12 +62,48 @@ modules:
       - NetworkManager-tui
       # Voice-to-text (hyprvoice dependency)
       - wtype
+      # GPU / Vulkan for LLM inference
+      - vulkan-tools
+      - mesa-vulkan-drivers
+      - vulkan-loader
       # Qt theming (qt6 packages conflict with wayblue's qt6-qtbase version)
       - qt5ct
       - qt6-qtmultimedia
     remove:
       - firefox
       - firefox-langpacks
+      # Superseded by caelestia-shell (bar/launcher/notifications/lock/wallpaper).
+      # See files/scripts/install-caelestia.sh for the caelestia-side packages.
+      # (rofi-wayland is NOT listed here despite being wofi/dunst's usual
+      # companion — it isn't actually present in wayblue's published image,
+      # and `rpm-ostree override remove` hard-fails with an opaque
+      # "conflicting requests" error if asked to remove a package that was
+      # never installed, unlike plain `dnf5 remove` which just skips it.
+      # pavucontrol is NOT listed either — caelestia's default audioSettings
+      # var wants `pwvucontrol`, but that package isn't available in any
+      # repo we have enabled for Fedora 44, so pavucontrol stays as the only
+      # audio mixer actually installed; hypr-vars.lua overrides audioSettings
+      # to match.)
+      - waybar
+      - wofi
+      - dunst
+      - hyprlock
+      - hyprpaper
+      - kitty
+      # fzf comes from wayblue's own base image; fd is provided natively via
+      # Homebrew in hyprome-dev-dots' Brewfile (along with lazygit/ripgrep) —
+      # both are dev-tooling duplicates once the Brewfile is applied
+      - fzf
+
+  # caelestia-dots desktop shell (quickshell-based). Builds/installs
+  # caelestia-shell + caelestia-cli from source and their COPR/build deps
+  # (waybar/rofi/wofi/dunst/hyprlock/hyprpaper/kitty/pavucontrol are removed
+  # above, superseded by caelestia-shell). caelestia's own
+  # hypr/hyprland/execs.lua already exec's `caelestia shell -d` on start, so
+  # no exec-once needs adding on the hyprome-dev-dots side.
+  - type: script
+    scripts:
+      - install-caelestia.sh
 
   - type: default-flatpaks
     configurations:
@@ -99,6 +141,5 @@ modules:
     user:
       enabled:
         - sync-dots.service
-        - hyprland-reloader.service
         - setup-hyprvoice.service
         - hyprvoice.service
