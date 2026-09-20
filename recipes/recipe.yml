@@ -51,6 +51,14 @@ modules:
       - imv
       - zathura
       - zathura-pdf-poppler
+      # File manager (GNOME Nautilus, standalone — doesn't need gnome-shell)
+      - nautilus
+      - file-roller
+      # caelestia-shell's own UI font default (config/AppearanceConfig.qml:
+      # font.family.sans/clock = "Rubik"). Its mono font default,
+      # CaskaydiaCove NF, isn't in Fedora repos — downloaded directly in
+      # install-caelestia.sh instead.
+      - google-rubik-fonts
       # System services
       - tailscale
       - moby-engine
@@ -83,17 +91,27 @@ modules:
       # var wants `pwvucontrol`, but that package isn't available in any
       # repo we have enabled for Fedora 44, so pavucontrol stays as the only
       # audio mixer actually installed; hypr-vars.lua overrides audioSettings
-      # to match.)
+      # to match. kitty is NOT listed either — kept as the terminal instead
+      # of switching to foot; hypr-vars.lua overrides terminal to match.
       - waybar
       - wofi
       - dunst
       - hyprlock
       - hyprpaper
-      - kitty
       # fzf comes from wayblue's own base image; fd is provided natively via
       # Homebrew in hyprome-dev-dots' Brewfile (along with lazygit/ripgrep) —
       # both are dev-tooling duplicates once the Brewfile is applied
       - fzf
+      # File manager: keeping GNOME's Nautilus (via nautilus package below)
+      # instead of caelestia's default Thunar — drop Thunar's plugins.
+      # (`thunar` itself isn't actually installed in wayblue's image despite
+      # its plugins being present — same "not actually installed" class of
+      # issue hit with rofi-wayland earlier; omitted for the same reason:
+      # `rpm-ostree override remove` hard-fails on packages that aren't
+      # there.) gvfs-* backends stay (shared VFS layer, not Thunar-specific).
+      - thunar-archive-plugin
+      - thunar-volman
+      - xarchiver
 
   # caelestia-dots desktop shell (quickshell-based). Builds/installs
   # caelestia-shell + caelestia-cli from source and their COPR/build deps

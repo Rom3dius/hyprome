@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # Builds and installs the caelestia-dots desktop shell (quickshell-based) on
 # top of wayblue's Hyprland image. wayblue's own waybar/rofi-wayland/wofi/
-# dunst/hyprlock/hyprpaper/kitty (and pavucontrol, superseded by
-# pwvucontrol) are removed in recipe.yml's rpm-ostree module, since
-# caelestia-shell fully replaces their functionality (bar, launcher,
-# notifications, lock screen, wallpaper) and duplicate apps serving the same
-# role aren't wanted here. caelestia's own hypr/hyprland/execs.lua execs
-# `caelestia shell -d` on start.
+# dunst/hyprlock/hyprpaper (and pavucontrol/thunar, superseded by
+# pwvucontrol/nautilus... see below) are removed in recipe.yml's rpm-ostree
+# module, since caelestia-shell fully replaces their functionality (bar,
+# launcher, notifications, lock screen, wallpaper) and duplicate apps serving
+# the same role aren't wanted here. caelestia's own hypr/hyprland/execs.lua
+# execs `caelestia shell -d` on start.
+#
+# Deliberate deviations from caelestia's own defaults, each overridden via
+# hyprome-dev-dots' hypr-vars.lua: terminal stays kitty (not foot), shell
+# stays zsh (not fish, no fish package installed here), file manager is
+# GNOME's Nautilus (not thunar) — pavucontrol stays for audio (pwvucontrol
+# isn't packaged anywhere we have access to on Fedora 44).
 set -oue pipefail
 
 log() { echo "=== $* ==="; }
@@ -44,8 +50,6 @@ QS_PKGS=(
 )
 
 CAELESTIA_RUNTIME=(
-    foot
-    fish
     btop
     lm_sensors
     socat
@@ -137,10 +141,19 @@ git clone --depth=1 --branch "${CAELESTIA_SHELL_VERSION}" \
 
 cd /tmp/caelestia-shell
 
+# NOTE: caelestia-shell's CMakeLists.txt defaults both INSTALL_QMLDIR and
+# INSTALL_LIBDIR to *relative* paths that already start with "usr/" (e.g.
+# "usr/lib/qt6/qml") — combined with CMAKE_INSTALL_PREFIX=/usr, CMake joins
+# them into a doubled /usr/usr/... (a real bug hit in an earlier build, for
+# INSTALL_QMLDIR specifically). Setting both explicitly, without the
+# redundant "usr/" segment, makes them land at the intended /usr/lib64/...
+# and /usr/lib/caelestia — no symlink workaround needed either way.
 cmake -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_LIBDIR=lib \
+    -DINSTALL_QMLDIR=lib64/qt6/qml \
+    -DINSTALL_LIBDIR=lib/caelestia \
     -DCMAKE_C_COMPILER=gcc \
     -DCMAKE_CXX_COMPILER=g++ \
     -DINSTALL_QSCONFDIR=/usr/share/quickshell/caelestia
@@ -150,9 +163,6 @@ cmake --install build
 
 mkdir -p /etc/xdg/quickshell
 ln -sf /usr/share/quickshell/caelestia /etc/xdg/quickshell/caelestia
-
-mkdir -p /usr/lib64/qt6/qml
-ln -sf /usr/lib/qt6/qml/Caelestia /usr/lib64/qt6/qml/Caelestia
 
 ldconfig
 cd /tmp && rm -rf /tmp/caelestia-shell
@@ -167,12 +177,25 @@ git clone --depth=1 --branch "${CAELESTIA_CLI_VERSION}" \
 
 cd /tmp/caelestia-cli
 
-pip3 install materialyoucolor --break-system-packages --target /usr/lib/python3/dist-packages
+# NOTE: --prefix=/usr is required here. Two earlier versions of this script
+# got this wrong in different ways:
+#   1. --target /usr/lib/python3/dist-packages — Debian/Ubuntu's dpkg
+#      convention, Fedora's python3 never searches that path.
+#   2. No --target/--prefix at all — pip's default "not a system package
+#      manager" scheme installs to /usr/local/lib/python3.14/site-packages,
+#      but /usr/local is a symlink to ../var/usrlocal on this ostree-based
+#      image (/usr must stay read-only, so /usr/local is redirected into
+#      /var). This build's own post_build.sh does `rm -rf /var/*` as a final
+#      cleanup step, silently wiping the "successfully installed" package
+#      before the image was even finished. --prefix=/usr forces pip to
+#      install into /usr/lib64/python3.14/site-packages instead, alongside
+#      where caelestia-cli itself lands two lines down.
+pip3 install materialyoucolor --break-system-packages --prefix=/usr
 python3 -m build --wheel --no-isolation
 python3 -m installer --prefix /usr dist/*.whl
 
-install -Dm644 completions/caelestia.fish \
-    /usr/share/fish/vendor_completions.d/caelestia.fish
+# caelestia-cli only ships a fish completion, and fish isn't installed here
+# (kept zsh) — nothing to install.
 
 cd /tmp && rm -rf /tmp/caelestia-cli
 
@@ -197,12 +220,17 @@ rm -rf /tmp/app2unit
 ###############################################################################
 # INSTALL FONTS
 ###############################################################################
-# hyprome's own recipe.yml already installs the `nerd-fonts` meta-package
-# (via the che/nerd-fonts COPR), which covers JetBrains Mono Nerd / Cascadia
-# Code Nerd already — no need to re-download nerd fonts here. Material
-# Symbols Rounded is caelestia-shell's one hard icon-font dependency and
-# isn't part of any nerd-fonts bundle, so that's the only font we fetch.
-log "Installing Material Symbols Rounded..."
+# caelestia-shell's own UI (config/AppearanceConfig.qml) hardcodes its font
+# defaults: material="Material Symbols Rounded" (fetched below — not part of
+# any nerd-fonts bundle), mono="CaskaydiaCove NF" (fetched below — hyprome's
+# own `nerd-fonts` package, via the che/nerd-fonts COPR, turned out to only
+# ship the symbols-only glyph set, not full patched font families, so this
+# can't be skipped), sans/clock="Rubik" (installed as a package in
+# recipe.yml via google-rubik-fonts). Verified CaskaydiaCove's shipped family
+# name is exactly "CaskaydiaCove NF" — no fontconfig alias needed for it,
+# unlike the JetBrains Mono naming mismatch hit (and dropped) in an earlier
+# version of this script when foot was still in use.
+log "Installing Material Symbols Rounded + CaskaydiaCove Nerd Font..."
 
 FONT_DIR="/usr/share/fonts/caelestia"
 install -d "${FONT_DIR}"
@@ -210,6 +238,11 @@ install -d "${FONT_DIR}"
 curl -fsSL \
     "https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsRounded%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf" \
     -o "${FONT_DIR}/MaterialSymbolsRounded.ttf"
+
+curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/CascadiaCode.zip" \
+    -o /tmp/CascadiaCode.zip
+unzip -oq /tmp/CascadiaCode.zip "CaskaydiaCoveNerdFont-*.ttf" -d "${FONT_DIR}"
+rm -f /tmp/CascadiaCode.zip
 
 fc-cache -f "${FONT_DIR}"
 
