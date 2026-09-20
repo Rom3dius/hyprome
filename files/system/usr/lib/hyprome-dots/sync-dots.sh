@@ -4,6 +4,10 @@ set -euo pipefail
 # ─── Config ─────────────────────────────────────────────────────────
 ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 DOTS_REPO="https://github.com/Rom3dius/hyprome-dev-dots"
+# caelestia-dots holds the caelestia-shell desktop migration, kept separate
+# from main (the stable zsh/kitty/GNOME-Files fallback dotfiles) while it's
+# being validated. Point this back at main once it's proven stable.
+DOTS_BRANCH="caelestia-dots"
 YADM_DIR="$HOME/.local/share/yadm/repo.git"
 BOOTSTRAP="$HOME/.config/yadm/bootstrap"
 
@@ -20,7 +24,7 @@ update_omz() {
 }
 
 reset_yadm_repo() {
-  echo "[YADM] Resetting dotfiles from $DOTS_REPO"
+  echo "[YADM] Resetting dotfiles from $DOTS_REPO (branch: $DOTS_BRANCH)"
 
   # Remove previous YADM repo if it exists
   if [ -d "$YADM_DIR" ]; then
@@ -29,7 +33,7 @@ reset_yadm_repo() {
   fi
 
   # Clone fresh
-  yadm clone -f "$DOTS_REPO"
+  yadm clone -f -b "$DOTS_BRANCH" "$DOTS_REPO"
 
   # Checkout and overwrite existing files
   echo "[YADM] Force-checking out dotfiles to $HOME"
