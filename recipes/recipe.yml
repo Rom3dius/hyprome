@@ -59,6 +59,11 @@ modules:
       # CaskaydiaCove NF, isn't in Fedora repos — downloaded directly in
       # install-caelestia.sh instead.
       - google-rubik-fonts
+      # Searchable keybind cheatsheet (SUPER+F1, see .local/bin/keybind-cheatsheet
+      # in hyprome-dev-dots). Installed live via a temporary
+      # `rpm-ostree usroverlay` during testing — that doesn't persist across
+      # reboots, hence adding it here for real.
+      - fuzzel
       # System services
       - tailscale
       - moby-engine
