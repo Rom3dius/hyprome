@@ -22,54 +22,16 @@ CAELESTIA_CLI_VERSION="v1.0.5"     # https://github.com/caelestia-dots/cli/relea
 CAVA_VERSION="0.10.6"              # https://github.com/LukashonakV/cava/releases
 
 ###############################################################################
-# COPR: quickshell-git
-###############################################################################
-# wayblue's own Hyprland COPR (craftidore/wayblueorg-hyprland) is already
-# enabled via the base image, so we do NOT add another Hyprland COPR here
-# (avoids the package-set conflicts that both wayblue and hyprblue-caelestia
-# have separately hit when mixing Hyprland/Qt builds from different COPRs).
-log "Enabling errornointernet/quickshell COPR..."
-dnf5 -y copr enable errornointernet/quickshell || true
-
-###############################################################################
 # PACKAGES
 ###############################################################################
-# quickshell-git and its close runtime deps not already covered by wayblue's
-# common-modules.yml (NetworkManager, bluez, wireplumber, thunar, grim/slurp,
-# playerctl, ddcutil, brightnessctl, wl-clipboard, papirus-icon-theme, etc.
-# are already present from the base image — not repeated here).
-#
-# Qt6 packages are deliberately NOT hand-pinned here: quickshell-git declares
-# its own Qt6 (qtbase/qtdeclarative/...) dependencies and dnf's resolver will
-# pull compatible versions. Both wayblue and hyprblue-caelestia have hit real
-# Qt6 version conflicts when explicitly forcing qt6-* packages (see the
-# existing "qt6 packages conflict with wayblue's qt6-qtbase version" note in
-# recipe.yml) — trust dependency resolution instead of repeating that.
-QS_PKGS=(
-    quickshell-git
-)
-
-CAELESTIA_RUNTIME=(
-    btop
-    lm_sensors
-    socat
-    ImageMagick
-    jq
-    adw-gtk3-theme
-    qt6ct
-    qalculate
-    libqalculate
-    trash-cli
-    hyprpicker
-    ydotool
-    # NOTE: caelestia's own default audioSettings var wants `pwvucontrol`,
-    # but it isn't available in any repo we have enabled for Fedora 44 (not
-    # in Fedora/updates, rpmfusion, or any COPR here) — --skip-unavailable
-    # would silently drop it below. wayblue's own `pavucontrol` (kept
-    # installed, see recipe.yml) is used instead; hypr-vars.lua overrides
-    # audioSettings to match.
-)
-
+# Only the build deps for the from-source builds below. quickshell-git,
+# gpu-screen-recorder, their COPRs, and caelestia's other runtime deps are
+# installed by recipe.yml's rpm-ostree module (which runs before this
+# script) so a package that disappears from its repo fails the build loudly
+# — `--skip-unavailable` below would silently drop it, which is how
+# pwvucontrol went missing. Base-image deps (NetworkManager, bluez,
+# wireplumber, grim/slurp, playerctl, ddcutil, brightnessctl, wl-clipboard,
+# papirus-icon-theme, socat, ImageMagick, jq, etc.) come from wayblue.
 BUILD_DEPS=(
     git
     cmake
@@ -104,8 +66,6 @@ BUILD_DEPS=(
 
 log "Installing packages..."
 dnf5 install --setopt=install_weak_deps=False --skip-unavailable -y \
-    "${QS_PKGS[@]}" \
-    "${CAELESTIA_RUNTIME[@]}" \
     "${BUILD_DEPS[@]}"
 
 # dart-sass via npm — redirect home/cache to /tmp to avoid broken symlinks in bootc
@@ -245,11 +205,5 @@ unzip -oq /tmp/CascadiaCode.zip "CaskaydiaCoveNerdFont-*.ttf" -d "${FONT_DIR}"
 rm -f /tmp/CascadiaCode.zip
 
 fc-cache -f "${FONT_DIR}"
-
-###############################################################################
-# DISABLE COPR
-###############################################################################
-log "Disabling errornointernet/quickshell COPR..."
-dnf5 -y copr disable errornointernet/quickshell || true
 
 log "caelestia install complete."

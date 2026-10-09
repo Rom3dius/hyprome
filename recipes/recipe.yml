@@ -24,6 +24,9 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-44/che-nerd-fonts-fedora-44.repo
       - https://download.opensuse.org/repositories/home:TheLocehiliosan:yadm/Fedora_Rawhide/home:TheLocehiliosan:yadm.repo
       - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-44/tofik-nwg-shell-fedora-44.repo
+      # caelestia-shell runtime (see the caelestia block in `install:` below)
+      - https://copr.fedorainfracloud.org/coprs/errornointernet/quickshell/repo/fedora-44/errornointernet-quickshell-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/brycensranch/gpu-screen-recorder-git/repo/fedora-44/brycensranch-gpu-screen-recorder-git-fedora-44.repo
     install:
       # Hyprland extras
       # NOTE: `swww` was previously installed here to override wayblue's
@@ -59,6 +62,34 @@ modules:
       # CaskaydiaCove NF, isn't in Fedora repos — downloaded directly in
       # install-caelestia.sh instead.
       - google-rubik-fonts
+      # caelestia-shell runtime. Installed here rather than in
+      # install-caelestia.sh's `dnf5 --skip-unavailable` so a package that
+      # vanishes from its repo fails the build loudly instead of being
+      # silently dropped (how pwvucontrol went missing). The script keeps
+      # only the build deps and the from-source builds. socat, ImageMagick
+      # and jq are also caelestia deps but already ship in wayblue's image,
+      # so they aren't repeated here.
+      # Qt6 packages are deliberately NOT hand-pinned: quickshell-git
+      # declares its own Qt6 deps and the resolver pulls compatible versions
+      # (see the qt6 conflict note further down).
+      - quickshell-git
+      - btop
+      - lm_sensors
+      - adw-gtk3-theme
+      - qt6ct
+      - qalculate
+      - libqalculate
+      - trash-cli
+      - hyprpicker
+      - ydotool
+      # Backend hardcoded by `caelestia record` (the shell's screen recorder
+      # button). Only packaged in the brycensranch COPR for Fedora 44; its
+      # %post setcaps gsr-kms-server with cap_sys_admin for monitor capture.
+      - gpu-screen-recorder
+      # NOTE: caelestia's default audioSettings var wants `pwvucontrol`,
+      # which isn't in any repo enabled here for Fedora 44 — pavucontrol
+      # (from wayblue, kept) is used instead; hypr-vars.lua overrides
+      # audioSettings to match.
       # Searchable keybind cheatsheet (SUPER+F1, see .local/bin/keybind-cheatsheet
       # in hyprome-dev-dots). Installed live via a temporary
       # `rpm-ostree usroverlay` during testing — that doesn't persist across

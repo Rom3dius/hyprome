@@ -42,7 +42,7 @@ The recipe follows the BlueBuild recipe-v1 schema: https://schema.blue-build.org
 Key module types used:
 - `files` - Copy files from `files/` into image
 - `rpm-ostree` - Add COPR repos, install/remove packages
-- `script` - Run a script from `files/scripts/` during the build (used for caelestia's COPR/source-build install)
+- `script` - Run a script from `files/scripts/` during the build (used for caelestia's source builds; its runtime packages and COPRs are in the `rpm-ostree` module)
 - `default-flatpaks` - Configure system/user flatpaks
 - `bling` - Install additional tools (1password)
 - `soar` - Package manager with auto-upgrade
